@@ -1,0 +1,157 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Movie Recommendation System
+By : Anjali Bhandari
+     (SE)
+# In[1]:
+
+
+# importing all necessary libraries
+
+
+# In[2]:
+
+
+import pandas as pd
+import numpy as np 
+
+
+# In[3]:
+
+
+# loading the data
+
+
+# In[4]:
+
+
+ratings = pd.read_csv(r"C:\project\ratings.csv")
+ratings = ratings.fillna(0)
+ratings.head(10)
+
+
+# In[5]:
+
+
+title = pd.read_csv(r"C:\project\movies.csv")
+title.head(10)
+
+
+# In[6]:
+
+
+merge = pd.merge(ratings , title , on = 'movieId',how = 'left')
+merge.head(10)
+
+
+# In[7]:
+
+
+# Finding the average rating for each and every movie in the dataset and storing it in average
+
+
+# In[8]:
+
+
+avg = pd.DataFrame(merge.groupby('title')['rating'].mean())
+avg
+
+
+# In[9]:
+
+
+# For total rating of each movie
+
+
+# In[10]:
+
+
+avg['Total Ratings'] = pd.DataFrame(merge.groupby('title')['rating'].count())
+avg
+
+
+# In[11]:
+
+
+# Calculating the correLation 
+
+
+# In[12]:
+
+
+movie = merge.pivot_table(index = 'userId' , columns = 'title' , values = 'rating')
+movie
+
+
+# In[13]:
+
+
+# Selecting the movie i.e Incredibles, The (2004) to test the recommendation system 
+
+
+# In[20]:
+
+
+relation = movie.corrwith(movie['Finding Nemo (2003)'])
+relation.head(20)
+
+
+# In[15]:
+
+
+# Removing the NaN values and merging total rating with correLatino table
+
+
+# In[16]:
+
+
+recommend = pd.DataFrame(relation , columns = ['Correlation'])
+recommend.dropna(inplace = True)
+recommend = recommend.join(avg['Total Ratings'])
+recommend.head
+
+
+# In[17]:
+
+
+filters = recommend[recommend['Total Ratings']>100].sort_values('Correlation',ascending = False ).reset_index()
+filters
+
+
+# In[18]:
+
+
+# Merging the data sets
+
+
+# In[19]:
+
+
+filters = filters.merge(title , on = 'title' , how = 'left')
+filters
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
